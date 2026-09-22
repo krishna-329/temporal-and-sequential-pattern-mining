@@ -4,7 +4,7 @@
   "description": "Temporal and Sequential Pattern Mining for Smart Systems & Federated GNN Community Detection Platform",
   "type": "module",
   "scripts": {
-    "dev": "node server.js"
+    "dev": "node local_server.cjs"
   },
   "keywords": [
     "sequential-pattern-mining",
