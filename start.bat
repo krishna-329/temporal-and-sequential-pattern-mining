@@ -1,3 +1,3 @@
 @echo off
-node local_server.cjs
+node server.js
 pause

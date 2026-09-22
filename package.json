@@ -1,19 +1,19 @@
 {
   "name": "temporal-sequential-pattern-mining",
   "version": "1.0.0",
-  "description": "Temporal and Sequential Pattern Mining for Smart Systems & Federated GNN Community Detection Platform",
+  "description": "Temporal and Sequential Pattern Mining for Smart Systems & Federated GNN Platform",
   "type": "module",
+  "main": "server.js",
   "scripts": {
-    "dev": "node local_server.cjs"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "keywords": [
     "sequential-pattern-mining",
     "prefixspan",
     "spade",
     "federated-learning",
-    "graph-neural-networks",
-    "differential-privacy",
-    "smart-systems"
+    "graph-neural-networks"
   ],
   "author": "Antigravity",
   "license": "MIT"
