@@ -1,8 +1,8 @@
 /**
- * Temporal and Sequential Pattern Mining - Server
+ * Universal Resilient Server for Temporal & Sequential Pattern Mining
+ * Compatible with Vercel Serverless Function and local Node.js server
  */
 
-import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,52 +10,38 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT || 3000;
+let cachedHtml = null;
 
-const MIME_TYPES = {
-  '.html': 'text/html; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.svg': 'image/svg+xml'
-};
-
-const server = http.createServer((req, res) => {
-  let reqPath = decodeURI(req.url.split('?')[0]);
-  if (reqPath === '/' || reqPath === '') {
-    reqPath = '/index.html';
+function getHtml() {
+  if (!cachedHtml) {
+    cachedHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   }
+  return cachedHtml;
+}
 
-  const filePath = path.join(__dirname, reqPath);
-
-  fs.stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
-      // Fallback: serve index.html
-      const indexPath = path.join(__dirname, 'index.html');
-      res.writeHead(200, {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Access-Control-Allow-Origin': '*'
-      });
-      const stream = fs.createReadStream(indexPath);
-      stream.pipe(res);
-      return;
-    }
-
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
+export default function handler(req, res) {
+  try {
+    const html = getHtml();
     res.writeHead(200, {
-      'Content-Type': contentType,
-      'Access-Control-Allow-Origin': '*'
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Length': Buffer.byteLength(html),
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'public, max-age=120'
     });
+    res.end(html);
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Error loading application: ' + err.message);
+  }
+}
 
-    const stream = fs.createReadStream(filePath);
-    stream.pipe(res);
+// Local server runner
+if (!process.env.VERCEL) {
+  import('http').then(http => {
+    const server = http.createServer(handler);
+    const PORT = process.env.PORT || 3000;
+    server.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
   });
-});
-
-server.listen(PORT, () => {
-  console.log('Server listening on ' + PORT);
-});
-
-export default server;
+}
