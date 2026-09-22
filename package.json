@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Temporal and Sequential Pattern Mining for Smart Systems & Federated GNN Community Detection Platform",
   "type": "module",
-  "main": "server.js",
   "scripts": {
     "dev": "node server.js"
   },
